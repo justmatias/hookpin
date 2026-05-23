@@ -1,0 +1,9 @@
+repos:
+  - repo: https://github.com/pre-commit/mirrors-mypy
+    rev: v1.0.0
+    hooks:
+      - id: mypy
+        additional_dependencies:
+          # pinned from uv.lock
+          - pydantic==1.0.0
+          - pydantic-core==1.0.0  # keep in sync

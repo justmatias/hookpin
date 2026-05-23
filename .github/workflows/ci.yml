@@ -2,18 +2,28 @@ name: CI
 
 on:
   push:
-    branches: [main]
+    branches: ['main']
   pull_request:
+    branches: ['main']
+
+permissions:
+  id-token: write
+  contents: write
+  pull-requests: write
+  actions: write
 
 jobs:
-  test:
+  lint:
+    name: Lint (Python ${{ matrix.python-version }})
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        python-version: ["3.11", "3.12", "3.13"]
-
+        python-version: ['3.11', '3.12', '3.13']
     steps:
       - uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          fetch-depth: 0
 
       - name: Install uv
         uses: astral-sh/setup-uv@v5
@@ -24,10 +34,107 @@ jobs:
       - name: Install dependencies
         run: uv sync --dev
 
-      - name: Lint
-        run: |
-          uv run ruff check src/ tests/
-          uv run ruff format --check src/ tests/
+      - name: Run lint and format checks
+        run: uv run poe format
 
-      - name: Test
-        run: uv run pytest --cov=sync_uv_additional_deps --cov-report=term-missing
+  test:
+    name: Test (Python ${{ matrix.python-version }})
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: ['3.11', '3.12', '3.13']
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          fetch-depth: 0
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v5
+
+      - name: Set up Python ${{ matrix.python-version }}
+        run: uv python install ${{ matrix.python-version }}
+
+      - name: Install dependencies
+        run: uv sync --dev
+
+      - name: Run unit tests
+        run: uv run poe test
+
+  breaking-changes:
+    name: Detect breaking changes
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main'
+    needs: [lint, test]
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          ref: main
+          fetch-depth: 0
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v5
+
+      - name: Set up Python 3.13
+        run: uv python install 3.13
+
+      - name: Install dependencies
+        run: uv sync --dev
+
+      - name: Get proposed version
+        id: proposed
+        run: |
+          VERSION=$(pipx run --spec python-semantic-release semantic-release --noop version --print)
+          echo "proposed=$VERSION" >> $GITHUB_OUTPUT
+
+      - name: Run pycracks
+        id: pycracks
+        continue-on-error: true
+        run: |
+          pipx run pycracks \
+            --path "tests" \
+            --target-version "${{ steps.proposed.outputs.proposed }}" \
+            --test-command "uv run poe test"
+
+      - name: Create breaking change commit
+        if: steps.pycracks.outcome == 'failure'
+        run: |
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git config user.name "github-actions[bot]"
+          git commit --allow-empty \
+            -m "feat!: breaking change detected [skip ci]"
+          git push origin main
+
+  versioning:
+    name: Versioning
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main'
+    needs: [breaking-changes]
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          ref: main
+          fetch-depth: 0
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v5
+
+      - name: Set up Python 3.13
+        run: uv python install 3.13
+
+      - name: Install dependencies
+        run: uv sync --dev
+
+      - name: Bump version and update changelog
+        id: release
+        uses: python-semantic-release/python-semantic-release@v9.21.1
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+
+    outputs:
+      released: ${{ steps.release.outputs.released }}
+      version: ${{ steps.release.outputs.version }}
