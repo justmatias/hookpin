@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "sync-uv-additional-deps"
-version = "0.0.0"
+version = "1.0.0"
 description = "Pre-commit hook to sync additional_dependencies pins from uv.lock"
 readme = "README.md"
 requires-python = ">=3.11"
@@ -14,18 +14,10 @@ dependencies = ["ruamel.yaml>=0.18"]
 [project.scripts]
 sync-uv-additional-deps = "sync_uv_additional_deps.main:main"
 
+
 [tool.setuptools]
 packages = ["sync_uv_additional_deps"]
 package-dir = {"sync_uv_additional_deps" = "src"}
-
-[dependency-groups]
-dev = [
-    "poethepoet>=0.33",
-    "pre-commit>=4.6.0",
-    "pytest>=8",
-    "pytest-cov>=5",
-    "ruff>=0.9",
-]
 
 [tool.ruff]
 line-length = 100
@@ -34,14 +26,17 @@ target-version = "py311"
 [tool.ruff.lint]
 select = ["E", "F", "I", "UP"]
 
+
 [tool.pytest.ini_options]
 testpaths = ["tests"]
+
 
 [tool.pylint.main]
 source-roots = ["."]
 
 [tool.pylint.messages-control]
 disable = ["missing-module-docstring", "missing-function-docstring", "missing-class-docstring"]
+
 
 [tool.poe.tasks]
 format = "pre-commit run --all-files --verbose"
@@ -51,6 +46,7 @@ test = "pytest --cov=src --cov=tests --cov-report=term-missing:skip-covered"
 ##################################
 # semantic release configuration #
 ##################################
+
 
 [tool.semantic_release]
 branch = "main"
@@ -95,3 +91,13 @@ name = "origin"
 type = "github"
 ignore_token_for_push = false
 insecure = false
+
+[dependency-groups]
+dev = [
+    "poethepoet>=0.33",
+    "pre-commit>=4.6.0",
+    "pytest>=8",
+    "pytest-cov>=5",
+    "ruff>=0.9",
+]
+
