@@ -1,6 +1,6 @@
 """Functions for updating additional_dependencies pins in a pre-commit config."""
 
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 from pathlib import Path
 
 from .config import PIN_RE, YAML_INSTANCE
