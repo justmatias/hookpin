@@ -1,0 +1,6 @@
+- id: sync-uv-additional-deps
+  name: Sync uv additional dependencies
+  language: python
+  entry: sync-uv-additional-deps
+  pass_filenames: false
+  always_run: true
