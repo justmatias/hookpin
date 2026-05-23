@@ -1,0 +1,9 @@
+repos:
+  - repo: https://github.com/pre-commit/mirrors-mypy
+    rev: v1.0.0
+    hooks:
+      - id: mypy
+        additional_dependencies:
+          - pydantic[email]==2.0.0
+          - black>=22.0
+          - mypy==0.900
