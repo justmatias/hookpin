@@ -1,6 +1,14 @@
 # CHANGELOG
 
 
+## v1.0.1 (2026-05-23)
+
+### Bug Fixes
+
+- Update reference for rev in semantic release config
+  ([`a38698e`](https://github.com/justmatias/pre-commit-uv-sync/commit/a38698e1797d4ac14c5b0c43890598d32564f5b0))
+
+
 ## v1.0.0 (2026-05-23)
 
 ### Bug Fixes

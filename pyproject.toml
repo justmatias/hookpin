@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "sync-uv-additional-deps"
-version = "1.0.0"
+version = "1.0.1"
 description = "Pre-commit hook to sync additional_dependencies pins from uv.lock"
 readme = "README.md"
 requires-python = ">=3.11"
@@ -13,6 +13,7 @@ dependencies = ["ruamel.yaml>=0.18"]
 
 [project.scripts]
 sync-uv-additional-deps = "sync_uv_additional_deps.main:main"
+
 
 
 [tool.setuptools]
@@ -91,6 +92,7 @@ name = "origin"
 type = "github"
 ignore_token_for_push = false
 insecure = false
+
 
 [dependency-groups]
 dev = [

@@ -9,7 +9,7 @@ Add to your `.pre-commit-config.yaml`:
 ```yaml
 repos:
   - repo: https://github.com/justmatias/pre-commit-uv-sync
-    rev: v0.1.0
+    rev: v1.0.1
     hooks:
       - id: sync-uv-additional-deps
 ```
