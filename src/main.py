@@ -1,3 +1,5 @@
+"""CLI entry point for sync-uv-additional-deps."""
+
 import argparse
 import sys
 from pathlib import Path
@@ -26,6 +28,7 @@ def _parse_args(argv: list[str] | None) -> argparse.Namespace:
 
 
 def main(argv: list[str] | None = None) -> int:
+    """Run the hook; return 0 (clean), 1 (pins updated), or 2 (error)."""
     args = _parse_args(argv)
     try:
         lock = parse_lock(args.lockfile)

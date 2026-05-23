@@ -1,4 +1,15 @@
 repos:
+  - repo: local
+    hooks:
+      - id: sync-uv-additional-deps
+        name: Sync uv additional dependencies
+        language: python
+        entry: sync-uv-additional-deps
+        pass_filenames: false
+        always_run: true
+        additional_dependencies:
+          - ruamel.yaml==0.19.1
+
   - repo: https://github.com/abravalheri/validate-pyproject
     rev: v0.25
     hooks:
@@ -34,6 +45,9 @@ repos:
     hooks:
       - id: pylint
         types: [python]
+        additional_dependencies:
+          - pytest==9.0.3
+          - ruamel.yaml==0.19.1
 
   - repo: https://github.com/pre-commit/mirrors-mypy
     rev: v2.1.0

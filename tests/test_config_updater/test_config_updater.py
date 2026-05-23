@@ -1,6 +1,6 @@
 from pathlib import Path
 
-from sync_uv_additional_deps.config_updater import update_config
+from sync_uv_additional_deps.config_updater import update_config  # pylint: disable=import-error
 
 
 def test_stale_pin_updated(config_basic: Path, lock_packages: dict) -> None:
@@ -21,9 +21,29 @@ def test_current_pin_is_noop(config_basic: Path, lock_packages: dict) -> None:
     assert config_basic.read_bytes() == before
 
 
-def test_unpinned_and_range_unchanged(config_with_extras: Path, lock_packages: dict) -> None:
-    update_config(config_with_extras, lock_packages)
+def test_unpinned_and_range_warns(config_with_extras: Path, lock_packages: dict) -> None:
+    result = update_config(config_with_extras, lock_packages)
     assert "black>=22.0" in config_with_extras.read_text()
+    assert any("black>=22.0" in w for w in result.warnings)
+
+
+def test_bare_package_name_warns(tmp_path: Path, lock_packages: dict) -> None:
+    cfg = tmp_path / "config.yaml"
+    cfg.write_text(
+        """\
+repos:
+  - repo: https://example.com/hook
+    rev: v1
+    hooks:
+      - id: my-hook
+        additional_dependencies:
+          - black
+"""
+    )
+    result = update_config(cfg, lock_packages)
+    assert result.changes == []
+    assert any("black" in w for w in result.warnings)
+    assert "black" in cfg.read_text()
 
 
 def test_extras_preserved(config_with_extras: Path, lock_packages: dict) -> None:

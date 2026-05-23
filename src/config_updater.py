@@ -1,6 +1,7 @@
-from dataclasses import dataclass
+"""Functions for updating additional_dependencies pins in a pre-commit config."""
+
+from dataclasses import dataclass, field
 from pathlib import Path
-from typing import Any
 
 from .config import PIN_RE, YAML_INSTANCE
 from .utils import normalize_package_name
@@ -20,12 +21,35 @@ class UpdateResult:
     warnings: list[str]
 
 
-def update_config(
-    config_path: Path,
-    lock: dict[str, str],
-) -> UpdateResult:
+@dataclass
+class DependencyResult:
+    new_dependency: str | None = None
+    change: Change | None = None
+    warning: str | None = None
+
+
+def _process_dep(entry: str, hook_id: str, lock: dict[str, str]) -> DependencyResult:
+    m = PIN_RE.match(entry)
+    if not m:
+        return DependencyResult(warning=f"{hook_id}: {entry!r} has no == pin — skipping")
+    orig_name, extras, old_ver = m.group(1), m.group(2), m.group(3)
+    norm = normalize_package_name(orig_name)
+    if norm not in lock:
+        return DependencyResult(
+            warning=f"{hook_id}: {orig_name} not found in lockfile — leaving unchanged"
+        )
+    new_ver = lock[norm]
+    if new_ver == old_ver:
+        return DependencyResult()
+    return DependencyResult(
+        new_dependency=f"{orig_name}{extras or ''}=={new_ver}",
+        change=Change(hook_id=hook_id, package=orig_name, old=old_ver, new=new_ver),
+    )
+
+
+def update_config(config_path: Path, lock: dict[str, str]) -> UpdateResult:
     """Rewrite stale == pins in config_path in place."""
-    data: dict[str, Any] = YAML_INSTANCE.load(config_path)
+    data: dict = YAML_INSTANCE.load(config_path)
     changes: list[Change] = []
     warnings: list[str] = []
 
@@ -36,21 +60,12 @@ def update_config(
             if not deps:
                 continue
             for i, entry in enumerate(deps):
-                m = PIN_RE.match(str(entry))
-                if not m:
-                    continue
-                orig_name, extras, old_ver = m.group(1), m.group(2), m.group(3)
-                norm = normalize_package_name(orig_name)
-                if norm not in lock:
-                    warnings.append(
-                        f"{hook_id}: {orig_name} not found in lockfile — leaving unchanged"
-                    )
-                    continue
-                new_ver = lock[norm]
-                if new_ver == old_ver:
-                    continue
-                deps[i] = f"{orig_name}{extras or ''}=={new_ver}"
-                changes.append(Change(hook_id=hook_id, package=orig_name, old=old_ver, new=new_ver))
+                result = _process_dep(str(entry), hook_id, lock)
+                if result.warning:
+                    warnings.append(result.warning)
+                if result.change:
+                    deps[i] = result.new_dependency
+                    changes.append(result.change)
 
     if changes:
         with config_path.open("w") as fh:

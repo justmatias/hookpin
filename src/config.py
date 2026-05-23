@@ -1,6 +1,8 @@
+"""Shared regex patterns and YAML instance used across the package."""
+
 import re
 
-from ruamel.yaml import YAML
+from ruamel.yaml import YAML  # pylint: disable=import-error
 
 # Matches: name[extras]==version  (extras and pre-release version segments optional)
 PIN_RE = re.compile(r"^([A-Za-z0-9_.-]+)(\[[^\]]+\])?==([\d.]+(?:[a-z0-9.+-]*)?)$")
