@@ -9,7 +9,7 @@ Add to your `.pre-commit-config.yaml`:
 ```yaml
 repos:
   - repo: https://github.com/justmatias/hookpin
-    rev: v3.0.1
+    rev: v4.0.0
     hooks:
       - id: hookpin
 ```
@@ -48,7 +48,7 @@ Override the output operator for all rewritten pins, regardless of what was in t
 
 ```yaml
 - repo: https://github.com/justmatias/pre-commit-uv-sync
-  rev: v3.0.1
+  rev: v4.0.0
   hooks:
     - id: sync-uv-additional-deps
       args: [--operator, '==']
