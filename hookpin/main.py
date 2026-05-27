@@ -30,6 +30,12 @@ def _parse_args(argv: list[str] | None) -> argparse.Namespace:
         default=None,
         help="Operator to use when rewriting pins; preserves existing operator by default",
     )
+    parser.add_argument(
+        "--dry-run",
+        action="store_true",
+        default=False,
+        help="Report stale pins and exit non-zero without writing (CI gate)",
+    )
     return parser.parse_args(argv)
 
 
@@ -41,7 +47,7 @@ def main(argv: list[str] | None = None) -> int:
     except FileNotFoundError as e:
         print(f"error: {e}", file=sys.stderr)
         return 2
-    result = update_config(args.config, lock, args.operator)
+    result = update_config(args.config, lock, args.operator, dry_run=args.dry_run)
     for warning in result.warnings:
         print(f"warning: {warning}", file=sys.stderr)
     for change in result.changes:
