@@ -53,3 +53,5 @@ repos:
     rev: v2.1.0
     hooks:
       - id: mypy
+        additional_dependencies:
+          - ruamel.yaml==0.19.1
