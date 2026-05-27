@@ -41,8 +41,8 @@ def config_with_comments(tmp_path: Path) -> Path:
 
 @pytest.fixture
 def multi_hook_config(tmp_path: Path) -> Path:
-    cfg = tmp_path / "config.yaml"
-    cfg.write_text(
+    config_path = tmp_path / "config.yaml"
+    config_path.write_text(
         """\
 repos:
   - repo: https://example.com/hook-a
@@ -59,13 +59,13 @@ repos:
           - pydantic==1.0.0
 """
     )
-    return cfg
+    return config_path
 
 
 @pytest.fixture
 def missing_package_config(tmp_path: Path) -> Path:
-    cfg = tmp_path / "config.yaml"
-    cfg.write_text(
+    config_path = tmp_path / "config.yaml"
+    config_path.write_text(
         """\
 repos:
   - repo: https://example.com/hook
@@ -76,13 +76,13 @@ repos:
           - unknown-package==1.0.0
 """
     )
-    return cfg
+    return config_path
 
 
 @pytest.fixture
 def case_config(tmp_path: Path) -> Path:
-    cfg = tmp_path / "config.yaml"
-    cfg.write_text(
+    config_path = tmp_path / "config.yaml"
+    config_path.write_text(
         """\
 repos:
   - repo: https://example.com/hook
@@ -93,4 +93,4 @@ repos:
           - Pydantic==1.0.0
 """
     )
-    return cfg
+    return config_path

@@ -377,7 +377,7 @@ wheels = [
 
 [[package]]
 name = "sync-uv-additional-deps"
-version = "0.0.0"
+version = "1.0.1"
 source = { editable = "." }
 dependencies = [
     { name = "ruamel-yaml" },

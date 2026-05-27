@@ -24,6 +24,12 @@ def _parse_args(argv: list[str] | None) -> argparse.Namespace:
         default=Path("uv.lock"),
         help="Path to uv.lock (default: uv.lock)",
     )
+    parser.add_argument(
+        "--operator",
+        choices=["==", "~=", ">=", "<=", "!="],
+        default=None,
+        help="Operator to use when rewriting pins; preserves existing operator by default",
+    )
     return parser.parse_args(argv)
 
 
@@ -35,11 +41,11 @@ def main(argv: list[str] | None = None) -> int:
     except FileNotFoundError as e:
         print(f"error: {e}", file=sys.stderr)
         return 2
-    result = update_config(args.config, lock)
-    for w in result.warnings:
-        print(f"warning: {w}", file=sys.stderr)
-    for c in result.changes:
-        print(f"{c.hook_id}: {c.package} {c.old} → {c.new}")
+    result = update_config(args.config, lock, args.operator)
+    for warning in result.warnings:
+        print(f"warning: {warning}", file=sys.stderr)
+    for change in result.changes:
+        print(f"{change.hook_id}: {change.package} {change.old} → {change.new}")
     return 1 if result.changes else 0
 
 
