@@ -1,4 +1,4 @@
-"""CLI entry point for sync-uv-additional-deps."""
+"""CLI entry point for hookpin."""
 
 import argparse
 import sys

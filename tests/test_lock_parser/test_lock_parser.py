@@ -1,7 +1,8 @@
 from pathlib import Path
 
 import pytest
-from sync_uv_additional_deps.lock_parser import parse_lock  # pylint: disable=import-error
+
+from hookpin.lock_parser import parse_lock  # pylint: disable=import-error
 
 
 def test_parse_basic(minimal_lock_file: Path) -> None:

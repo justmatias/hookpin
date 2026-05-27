@@ -1,4 +1,4 @@
-# sync-uv-additional-deps
+# hookpin
 
 A pre-commit hook that keeps `additional_dependencies` pins in `.pre-commit-config.yaml` in sync with your `uv.lock` file.
 
@@ -11,7 +11,7 @@ repos:
   - repo: https://github.com/justmatias/pre-commit-uv-sync
     rev: v1.0.1
     hooks:
-      - id: sync-uv-additional-deps
+      - id: hookpin
 ```
 
 The hook reads `uv.lock` and rewrites stale `additional_dependencies` entries in place.
@@ -20,14 +20,14 @@ The hook reads `uv.lock` and rewrites stale `additional_dependencies` entries in
 
 All PEP 440 operators are handled:
 
-| Specifier in config        | Rewritten to              |
-| -------------------------- | ------------------------- |
-| `pydantic==1.0.0`          | `pydantic==2.13.4`        |
-| `pydantic>=1.0.0`          | `pydantic>=2.13.4`        |
-| `pydantic~=1.0.0`          | `pydantic~=2.13.4`        |
-| `pydantic<=1.0.0`          | `pydantic<=2.13.4`        |
-| `pydantic!=1.0.0`          | `pydantic!=2.13.4`        |
-| `pydantic>=1.0,<3.0`       | `pydantic==2.13.4`        |
+| Specifier in config  | Rewritten to       |
+| -------------------- | ------------------ |
+| `pydantic==1.0.0`    | `pydantic==2.13.4` |
+| `pydantic>=1.0.0`    | `pydantic>=2.13.4` |
+| `pydantic~=1.0.0`    | `pydantic~=2.13.4` |
+| `pydantic<=1.0.0`    | `pydantic<=2.13.4` |
+| `pydantic!=1.0.0`    | `pydantic!=2.13.4` |
+| `pydantic>=1.0,<3.0` | `pydantic==2.13.4` |
 
 Compound range specifiers (e.g. `>=1.0,<3.0`) are collapsed to an exact `==` pin.
 
@@ -51,7 +51,7 @@ Override the output operator for all rewritten pins, regardless of what was in t
   rev: v1.0.1
   hooks:
     - id: sync-uv-additional-deps
-      args: [--operator, "=="]
+      args: [--operator, '==']
 ```
 
 Accepted values: `==`, `~=`, `>=`, `<=`, `!=`. When omitted, the existing operator is preserved (ranges collapse to `==`).

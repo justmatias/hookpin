@@ -3,7 +3,7 @@ requires = ["setuptools>=68"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "sync-uv-additional-deps"
+name = "hookpin"
 version = "1.0.1"
 description = "Pre-commit hook to sync additional_dependencies pins from uv.lock"
 readme = "README.md"
@@ -12,13 +12,12 @@ license = { text = "MIT" }
 dependencies = ["ruamel.yaml>=0.18"]
 
 [project.scripts]
-sync-uv-additional-deps = "sync_uv_additional_deps.main:main"
+hookpin = "hookpin.main:main"
 
 
 
 [tool.setuptools]
-packages = ["sync_uv_additional_deps"]
-package-dir = {"sync_uv_additional_deps" = "src"}
+packages = ["hookpin"]
 
 [tool.ruff]
 line-length = 100
