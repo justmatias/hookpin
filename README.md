@@ -47,7 +47,7 @@ Entries with no version specifier (bare package names, or names with only a mark
 Override the output operator for all rewritten pins, regardless of what was in the config:
 
 ```yaml
-- repo: https://github.com/justmatias/pre-commit-uv-sync
+- repo: https://github.com/justmatias/hook-pin
   rev: v3.0.1
   hooks:
     - id: sync-uv-additional-deps
@@ -55,6 +55,18 @@ Override the output operator for all rewritten pins, regardless of what was in t
 ```
 
 Accepted values: `==`, `~=`, `>=`, `<=`, `!=`. When omitted, the existing operator is preserved (ranges collapse to `==`).
+
+### `--dry-run`
+
+Report stale pins and missing dependencies without writing any files. Exits 1 if any issues are found, making it useful as a CI gate:
+
+```yaml
+- repo: https://github.com/justmatias/hookpin
+  rev: v3.0.1
+  hooks:
+    - id: hookpin
+      args: [--dry-run]
+```
 
 ### `--config`
 
@@ -66,8 +78,8 @@ Path to the lock file. Defaults to `uv.lock`.
 
 ## Exit codes
 
-| Code | Meaning                                          |
-| ---- | ------------------------------------------------ |
-| 0    | All pins are current — nothing changed           |
-| 1    | File was rewritten (pre-commit fixer convention) |
-| 2    | Hard error (e.g. `uv.lock` not found)            |
+| Code | Meaning                                                           |
+| ---- | ----------------------------------------------------------------- |
+| 0    | All pins are current — nothing changed                            |
+| 1    | Pins were rewritten, or deps in config are missing from `uv.lock` |
+| 2    | Hard error (e.g. `uv.lock` not found)                             |
