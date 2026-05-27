@@ -1,9 +1,15 @@
 # CHANGELOG
 
 
+## v3.0.0 (2026-05-27)
+
+
 ## v2.0.0 (2026-05-27)
 
 ### Bug Fixes
+
+- Rename CLI from sync-uv-additional-deps to hookpin
+  ([`01d6d15`](https://github.com/justmatias/hookpin/commit/01d6d154c452edb27d0a2315ff2865026de971da))
 
 - **config**: Update dependency handling in sync-uv-additional-deps
   ([`3ebd531`](https://github.com/justmatias/hookpin/commit/3ebd531fd76a9b00f23dd357ad882c33dd02ada3))
