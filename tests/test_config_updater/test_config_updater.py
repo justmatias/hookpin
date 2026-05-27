@@ -60,12 +60,31 @@ def test_multiple_hooks_updated(multi_hook_config: Path, lock_packages: dict) ->
     assert all(change.package == "pydantic" for change in result.changes)
 
 
-def test_missing_from_lock_warns(missing_package_config: Path, lock_packages: dict) -> None:
+def test_missing_from_lock_tracked(missing_package_config: Path, lock_packages: dict) -> None:
     result = update_config(missing_package_config, lock_packages)
     assert not result.changes
-    assert len(result.warnings) == 1
-    assert "unknown-package" in result.warnings[0]
+    assert not result.warnings
+    assert len(result.missing) == 1
+    assert "unknown-package" in result.missing[0]
     assert "unknown-package==1.0.0" in missing_package_config.read_text()
+
+
+def test_bare_name_not_in_missing(tmp_path: Path, lock_packages: dict) -> None:
+    config_path = tmp_path / "config.yaml"
+    config_path.write_text(
+        """\
+repos:
+  - repo: https://example.com/hook
+    rev: v1
+    hooks:
+      - id: my-hook
+        additional_dependencies:
+          - unknown-bare-package
+"""
+    )
+    result = update_config(config_path, lock_packages)
+    assert not result.missing
+    assert len(result.warnings) == 1
 
 
 def test_comments_preserved(config_with_comments: Path, lock_packages: dict) -> None:

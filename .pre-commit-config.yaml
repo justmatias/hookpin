@@ -2,7 +2,7 @@ repos:
   - repo: local
     hooks:
       - id: hookpin
-        name: Sync uv additional dependencies
+        name: sync uv additional dependencies
         language: python
         entry: hookpin
         pass_filenames: false

@@ -50,9 +50,11 @@ def main(argv: list[str] | None = None) -> int:
     result = update_config(args.config, lock, args.operator, dry_run=args.dry_run)
     for warning in result.warnings:
         print(f"warning: {warning}", file=sys.stderr)
+    for item in result.missing:
+        print(f"warning: {item}", file=sys.stderr)
     for change in result.changes:
         print(f"{change.hook_id}: {change.package} {change.old} → {change.new}")
-    return 1 if result.changes else 0
+    return 1 if (result.changes or result.missing) else 0
 
 
 if __name__ == "__main__":

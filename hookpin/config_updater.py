@@ -19,6 +19,7 @@ class Change:
 class UpdateResult:
     changes: list[Change]
     warnings: list[str]
+    missing: list[str]
 
 
 @dataclass
@@ -26,6 +27,7 @@ class DependencyResult:
     new_dependency: str | None = None
     change: Change | None = None
     warning: str | None = None
+    missing: bool = False
 
 
 def _process_dep(
@@ -38,7 +40,8 @@ def _process_dep(
     normalized_name = normalize_package_name(original_name)
     if normalized_name not in lock:
         return DependencyResult(
-            warning=f"{hook_id}: {original_name} not found in lockfile — leaving unchanged"
+            missing=True,
+            warning=f"{hook_id}: {original_name} not found in lockfile — leaving unchanged",
         )
     new_version = lock[normalized_name]
     parts = SPECIFIER_PART_RE.findall(specifier)  # [(op, ver), ...]
@@ -74,6 +77,7 @@ def update_config(
     data: dict = YAML_INSTANCE.load(config_path)
     changes: list[Change] = []
     warnings: list[str] = []
+    missing: list[str] = []
 
     for repo in data.get("repos", []):
         for hook in repo.get("hooks", []):
@@ -84,7 +88,9 @@ def update_config(
             for index, entry in enumerate(dependencies):
                 result = _process_dep(
                     entry=str(entry), hook_id=hook_id, lock=lock, operator=operator)
-                if result.warning:
+                if result.missing and result.warning:
+                    missing.append(result.warning)
+                elif result.warning:
                     warnings.append(result.warning)
                 if result.change:
                     dependencies[index] = result.new_dependency
@@ -94,4 +100,4 @@ def update_config(
         with config_path.open("w") as config_file:
             YAML_INSTANCE.dump(data, config_file)
 
-    return UpdateResult(changes=changes, warnings=warnings)
+    return UpdateResult(changes=changes, warnings=warnings, missing=missing)
