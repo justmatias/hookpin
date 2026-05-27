@@ -8,7 +8,7 @@ Add to your `.pre-commit-config.yaml`:
 
 ```yaml
 repos:
-  - repo: https://github.com/justmatias/pre-commit-uv-sync
+  - repo: https://github.com/justmatias/hookpin
     rev: v3.0.1
     hooks:
       - id: hookpin

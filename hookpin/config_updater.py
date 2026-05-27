@@ -19,6 +19,7 @@ class Change:
 class UpdateResult:
     changes: list[Change]
     warnings: list[str]
+    missing: list[str]
 
 
 @dataclass
@@ -26,6 +27,7 @@ class DependencyResult:
     new_dependency: str | None = None
     change: Change | None = None
     warning: str | None = None
+    missing: bool = False
 
 
 def _process_dep(
@@ -38,7 +40,8 @@ def _process_dep(
     normalized_name = normalize_package_name(original_name)
     if normalized_name not in lock:
         return DependencyResult(
-            warning=f"{hook_id}: {original_name} not found in lockfile — leaving unchanged"
+            missing=True,
+            warning=f"{hook_id}: {original_name} not found in lockfile — leaving unchanged",
         )
     new_version = lock[normalized_name]
     parts = SPECIFIER_PART_RE.findall(specifier)  # [(op, ver), ...]
@@ -61,8 +64,29 @@ def _process_dep(
     )
 
 
+def _process_hook_dependencies(
+    dependencies: list,
+    *,
+    hook_id: str,
+    lock: dict[str, str],
+    operator: str | None,
+) -> UpdateResult:
+    result = UpdateResult(changes=[], warnings=[], missing=[])
+    for index, entry in enumerate(dependencies):
+        dep = _process_dep(entry=str(entry), hook_id=hook_id, lock=lock, operator=operator)
+        if dep.missing and dep.warning:
+            result.missing.append(dep.warning)
+        elif dep.warning:
+            result.warnings.append(dep.warning)
+        if dep.change:
+            dependencies[index] = dep.new_dependency
+            result.changes.append(dep.change)
+    return result
+
+
 def update_config(
     config_path: Path,
+    *,
     lock: dict[str, str],
     operator: str | None = None,
     dry_run: bool = False,
@@ -72,26 +96,25 @@ def update_config(
     When *dry_run* is True, compute changes but do not write the file.
     """
     data: dict = YAML_INSTANCE.load(config_path)
-    changes: list[Change] = []
-    warnings: list[str] = []
+    result = UpdateResult(changes=[], warnings=[], missing=[])
 
     for repo in data.get("repos", []):
         for hook in repo.get("hooks", []):
-            hook_id = hook.get("id", "<unknown>")
             dependencies = hook.get("additional_dependencies")
             if not dependencies:
                 continue
-            for index, entry in enumerate(dependencies):
-                result = _process_dep(
-                    entry=str(entry), hook_id=hook_id, lock=lock, operator=operator)
-                if result.warning:
-                    warnings.append(result.warning)
-                if result.change:
-                    dependencies[index] = result.new_dependency
-                    changes.append(result.change)
+            hook_result = _process_hook_dependencies(
+                dependencies,
+                hook_id=hook.get("id", "<unknown>"),
+                lock=lock,
+                operator=operator,
+            )
+            result.changes.extend(hook_result.changes)
+            result.warnings.extend(hook_result.warnings)
+            result.missing.extend(hook_result.missing)
 
-    if changes and not dry_run:
+    if result.changes and not dry_run:
         with config_path.open("w") as config_file:
             YAML_INSTANCE.dump(data, config_file)
 
-    return UpdateResult(changes=changes, warnings=warnings)
+    return result

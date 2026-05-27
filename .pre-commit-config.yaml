@@ -2,7 +2,7 @@ repos:
   - repo: local
     hooks:
       - id: hookpin
-        name: Sync uv additional dependencies
+        name: sync uv additional dependencies
         language: python
         entry: hookpin
         pass_filenames: false
@@ -53,3 +53,5 @@ repos:
     rev: v2.1.0
     hooks:
       - id: mypy
+        additional_dependencies:
+          - ruamel.yaml==0.19.1

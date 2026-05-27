@@ -14,11 +14,6 @@ dependencies = ["ruamel.yaml>=0.18"]
 [project.scripts]
 hookpin = "hookpin.main:main"
 
-
-
-
-
-
 [tool.setuptools]
 packages = ["hookpin"]
 
