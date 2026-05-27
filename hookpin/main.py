@@ -47,7 +47,7 @@ def main(argv: list[str] | None = None) -> int:
     except FileNotFoundError as e:
         print(f"error: {e}", file=sys.stderr)
         return 2
-    result = update_config(args.config, lock, args.operator, dry_run=args.dry_run)
+    result = update_config(args.config, lock=lock, operator=args.operator, dry_run=args.dry_run)
     for warning in result.warnings:
         print(f"warning: {warning}", file=sys.stderr)
     for item in result.missing:
