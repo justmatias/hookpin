@@ -1,6 +1,19 @@
 # CHANGELOG
 
 
+## v5.0.0 (2026-05-27)
+
+### Chores
+
+- Add --dry-run support docs ([#7](https://github.com/justmatias/hookpin/pull/7),
+  [`a45f57c`](https://github.com/justmatias/hookpin/commit/a45f57c8bcb7758b71336fc6cbe775d7b3a5071e))
+
+### Features
+
+- Breaking change detected [skip ci]
+  ([`d05efb5`](https://github.com/justmatias/hookpin/commit/d05efb5cced9b2b50a07fef07f15714e003423cc))
+
+
 ## v4.0.0 (2026-05-27)
 
 ### Features
