@@ -9,7 +9,7 @@ Add to your `.pre-commit-config.yaml`:
 ```yaml
 repos:
   - repo: https://github.com/justmatias/hookpin
-    rev: v3.0.1
+    rev: v4.0.0
     hooks:
       - id: hookpin
 ```
@@ -47,8 +47,8 @@ Entries with no version specifier (bare package names, or names with only a mark
 Override the output operator for all rewritten pins, regardless of what was in the config:
 
 ```yaml
-- repo: https://github.com/justmatias/hook-pin
-  rev: v3.0.1
+- repo: https://github.com/justmatias/hookpin
+  rev: v4.0.0
   hooks:
     - id: sync-uv-additional-deps
       args: [--operator, '==']
@@ -62,7 +62,7 @@ Report stale pins and missing dependencies without writing any files. Exits 1 if
 
 ```yaml
 - repo: https://github.com/justmatias/hookpin
-  rev: v3.0.1
+  rev: v4.0.0
   hooks:
     - id: hookpin
       args: [--dry-run]

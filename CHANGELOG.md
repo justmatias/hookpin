@@ -1,6 +1,14 @@
 # CHANGELOG
 
 
+## v4.0.0 (2026-05-27)
+
+### Features
+
+- Breaking change detected [skip ci]
+  ([`29727bb`](https://github.com/justmatias/hookpin/commit/29727bbeb84137c60e6da4458097188f00b1739f))
+
+
 ## v3.0.1 (2026-05-27)
 
 
