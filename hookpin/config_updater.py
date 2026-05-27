@@ -62,9 +62,15 @@ def _process_dep(
 
 
 def update_config(
-    config_path: Path, lock: dict[str, str], operator: str | None = None
+    config_path: Path,
+    lock: dict[str, str],
+    operator: str | None = None,
+    dry_run: bool = False,
 ) -> UpdateResult:
-    """Rewrite stale version pins in config_path in place."""
+    """Rewrite stale version pins in config_path in place.
+
+    When *dry_run* is True, compute changes but do not write the file.
+    """
     data: dict = YAML_INSTANCE.load(config_path)
     changes: list[Change] = []
     warnings: list[str] = []
@@ -84,7 +90,7 @@ def update_config(
                     dependencies[index] = result.new_dependency
                     changes.append(result.change)
 
-    if changes:
+    if changes and not dry_run:
         with config_path.open("w") as config_file:
             YAML_INSTANCE.dump(data, config_file)
 
