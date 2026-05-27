@@ -1,6 +1,6 @@
 from pathlib import Path
 
-from sync_uv_additional_deps.main import main  # pylint: disable=import-error
+from hookpin.main import main  # pylint: disable=import-error
 
 
 def test_stale_pin_returns_1(config_and_lock: tuple[Path, Path]) -> None:

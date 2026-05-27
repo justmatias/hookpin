@@ -1,6 +1,6 @@
 from pathlib import Path
 
-from sync_uv_additional_deps.config_updater import update_config  # pylint: disable=import-error
+from hookpin.config_updater import update_config  # pylint: disable=import-error
 
 
 def test_stale_pin_updated(config_basic: Path, lock_packages: dict) -> None:
@@ -9,7 +9,7 @@ def test_stale_pin_updated(config_basic: Path, lock_packages: dict) -> None:
     assert result.changes[0].package == "pydantic"
     assert result.changes[0].old == "1.0.0"
     assert result.changes[0].new == "2.13.4"
-    assert result.warnings == []
+    assert not result.warnings
     assert "pydantic==2.13.4" in config_basic.read_text()
 
 
@@ -17,7 +17,7 @@ def test_current_pin_is_noop(config_basic: Path, lock_packages: dict) -> None:
     update_config(config_basic, lock_packages)
     before = config_basic.read_bytes()
     result = update_config(config_basic, lock_packages)
-    assert result.changes == []
+    assert not result.changes
     assert config_basic.read_bytes() == before
 
 
@@ -41,7 +41,7 @@ repos:
 """
     )
     result = update_config(config_path, lock_packages)
-    assert result.changes == []
+    assert not result.changes
     assert any("black" in w for w in result.warnings)
     assert "black" in config_path.read_text()
 
@@ -62,7 +62,7 @@ def test_multiple_hooks_updated(multi_hook_config: Path, lock_packages: dict) ->
 
 def test_missing_from_lock_warns(missing_package_config: Path, lock_packages: dict) -> None:
     result = update_config(missing_package_config, lock_packages)
-    assert result.changes == []
+    assert not result.changes
     assert len(result.warnings) == 1
     assert "unknown-package" in result.warnings[0]
     assert "unknown-package==1.0.0" in missing_package_config.read_text()
@@ -228,8 +228,8 @@ repos:
 """
     )
     result = update_config(config_path, lock_packages)
-    assert result.changes == []
-    assert result.warnings == []
+    assert not result.changes
+    assert not result.warnings
 
 
 def test_operator_flag_collapses_range(tmp_path: Path, lock_packages: dict) -> None:
