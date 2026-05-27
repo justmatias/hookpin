@@ -1,7 +1,15 @@
 # CHANGELOG
 
 
+## v3.0.1 (2026-05-27)
+
+
 ## v3.0.0 (2026-05-27)
+
+### Bug Fixes
+
+- Add --dry-run option to check for stale pins without modifying configuration files
+  ([`5f9bc76`](https://github.com/justmatias/hookpin/commit/5f9bc76a247c80ce514d35d07b56bad422aae66a))
 
 
 ## v2.0.0 (2026-05-27)
