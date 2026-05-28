@@ -1,6 +1,27 @@
 # CHANGELOG
 
 
+## v6.0.0 (2026-05-28)
+
+### Features
+
+- Add support for multiple config files and glob patterns with --…
+  ([#8](https://github.com/justmatias/hookpin/pull/8),
+  [`6dd3e6b`](https://github.com/justmatias/hookpin/commit/6dd3e6b9053e2e7decffa262957152bdfd3c03c8))
+
+* feat: add support for multiple config files and glob patterns with --config, including dry-run
+  mode and CLI entry point
+
+* fix: config rename variables for clarity
+
+* test: refactor test fixtures into external files and standardize directory-based management
+
+* refactor: modularize test fixtures and add features documentation
+
+- Breaking change detected [skip ci]
+  ([`ae8a9af`](https://github.com/justmatias/hookpin/commit/ae8a9af27c42f19490d58fcbbbb661a5884e0ec1))
+
+
 ## v5.0.0 (2026-05-27)
 
 ### Chores
