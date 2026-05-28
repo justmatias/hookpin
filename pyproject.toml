@@ -12,7 +12,7 @@ license = { text = "MIT" }
 dependencies = ["ruamel.yaml>=0.18"]
 
 [project.scripts]
-hookpin = "hookpin.main:main"
+hookpin = "hookpin.cli:main"
 
 
 
@@ -33,6 +33,7 @@ testpaths = ["tests"]
 
 [tool.pylint.main]
 source-roots = ["."]
+extension-pkg-allow-list = ["ruamel.yaml"]
 
 [tool.pylint.messages-control]
 disable = ["missing-module-docstring", "missing-function-docstring", "missing-class-docstring"]

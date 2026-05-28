@@ -1,0 +1,9 @@
+# Config using the compatible-release operator (~=).
+# Used to verify that the ~= operator is preserved when rewriting the version.
+repos:
+  - repo: https://example.com/hook
+    rev: v1
+    hooks:
+      - id: my-hook
+        additional_dependencies:
+          - pydantic~=1.0.0

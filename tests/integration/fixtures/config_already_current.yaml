@@ -1,0 +1,9 @@
+# Config whose pin (ruff==0.9.0) already matches the lockfile version.
+# Used to verify that hookpin exits 0 and writes nothing when all pins are current.
+repos:
+  - repo: https://example.com/hook
+    rev: v1
+    hooks:
+      - id: my-hook
+        additional_dependencies:
+          - ruff==0.9.0

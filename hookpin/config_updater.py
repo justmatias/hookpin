@@ -1,10 +1,14 @@
-"""Functions for updating additional_dependencies pins in a pre-commit config."""
-
 from dataclasses import dataclass
 from pathlib import Path
 
-from .config import SPECIFIER_PART_RE, SPECIFIER_RE, YAML_INSTANCE
-from .utils import normalize_package_name
+from ruamel.yaml import YAML
+
+from .naming import normalize_package_name
+from .patterns import SPECIFIER_PART_RE, SPECIFIER_RE
+
+YAML_INSTANCE = YAML()
+YAML_INSTANCE.preserve_quotes = True
+YAML_INSTANCE.indent(mapping=2, sequence=4, offset=2)
 
 
 @dataclass(frozen=True)
@@ -30,7 +34,7 @@ class DependencyResult:
     missing: bool = False
 
 
-def _process_dep(
+def _process_dependency(
     *, entry: str, hook_id: str, lock: dict[str, str], operator: str | None = None
 ) -> DependencyResult:
     match = SPECIFIER_RE.match(entry)
@@ -44,7 +48,7 @@ def _process_dep(
             warning=f"{hook_id}: {original_name} not found in lockfile — leaving unchanged",
         )
     new_version = lock[normalized_name]
-    parts = SPECIFIER_PART_RE.findall(specifier)  # [(op, ver), ...]
+    parts = SPECIFIER_PART_RE.findall(specifier)  # [(operator, version), ...]
 
     if operator:
         output_operator = operator
@@ -73,14 +77,16 @@ def _process_hook_dependencies(
 ) -> UpdateResult:
     result = UpdateResult(changes=[], warnings=[], missing=[])
     for index, entry in enumerate(dependencies):
-        dep = _process_dep(entry=str(entry), hook_id=hook_id, lock=lock, operator=operator)
-        if dep.missing and dep.warning:
-            result.missing.append(dep.warning)
-        elif dep.warning:
-            result.warnings.append(dep.warning)
-        if dep.change:
-            dependencies[index] = dep.new_dependency
-            result.changes.append(dep.change)
+        dependency = _process_dependency(
+            entry=str(entry), hook_id=hook_id, lock=lock, operator=operator
+        )
+        if dependency.missing and dependency.warning:
+            result.missing.append(dependency.warning)
+        elif dependency.warning:
+            result.warnings.append(dependency.warning)
+        if dependency.change:
+            dependencies[index] = dependency.new_dependency
+            result.changes.append(dependency.change)
     return result
 
 

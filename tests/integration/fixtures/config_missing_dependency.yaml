@@ -1,0 +1,9 @@
+# Config referencing a package (not-in-lockfile) absent from uv.lock.
+# Used to verify that hookpin reports missing deps and exits 1 without rewriting the file.
+repos:
+  - repo: https://example.com/hook
+    rev: v1
+    hooks:
+      - id: my-hook
+        additional_dependencies:
+          - not-in-lockfile==1.0.0

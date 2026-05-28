@@ -1,0 +1,9 @@
+# Config with a PEP 508 environment marker (; python_version>="3.11").
+# Used to verify that the marker is preserved verbatim after the version is rewritten.
+repos:
+  - repo: https://example.com/hook
+    rev: v1
+    hooks:
+      - id: my-hook
+        additional_dependencies:
+          - pydantic==1.0.0; python_version>="3.11"

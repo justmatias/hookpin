@@ -1,0 +1,9 @@
+# Config with a bare package name (no version specifier).
+# Used to verify that hookpin emits a warning and leaves the entry unchanged.
+repos:
+  - repo: https://example.com/hook
+    rev: v1
+    hooks:
+      - id: my-hook
+        additional_dependencies:
+          - black
