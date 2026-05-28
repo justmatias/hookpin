@@ -3,8 +3,14 @@
 from dataclasses import dataclass
 from pathlib import Path
 
-from .config import SPECIFIER_PART_RE, SPECIFIER_RE, YAML_INSTANCE
-from .utils import normalize_package_name
+from ruamel.yaml import YAML  # pylint: disable=import-error
+
+from .naming import normalize_package_name
+from .patterns import SPECIFIER_PART_RE, SPECIFIER_RE
+
+YAML_INSTANCE = YAML()
+YAML_INSTANCE.preserve_quotes = True
+YAML_INSTANCE.indent(mapping=2, sequence=4, offset=2)
 
 
 @dataclass(frozen=True)

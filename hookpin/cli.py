@@ -5,6 +5,7 @@ import sys
 from pathlib import Path
 
 from .config_updater import update_config
+from .discovery import resolve_configs
 from .lock_parser import parse_lock
 
 
@@ -15,8 +16,13 @@ def _parse_args(argv: list[str] | None) -> argparse.Namespace:
     parser.add_argument(
         "--config",
         type=Path,
-        default=Path(".pre-commit-config.yaml"),
-        help="Path to .pre-commit-config.yaml (default: .pre-commit-config.yaml)",
+        action="append",
+        default=None,
+        help=(
+            "Path or glob to a pre-commit config file; may be repeated. "
+            "Glob patterns are expanded by hookpin (shell expansion is not required). "
+            "Defaults to .pre-commit-config.yaml when omitted."
+        ),
     )
     parser.add_argument(
         "--lockfile",
@@ -42,20 +48,30 @@ def _parse_args(argv: list[str] | None) -> argparse.Namespace:
 def main(argv: list[str] | None = None) -> int:
     """Run the hook; return 0 (clean), 1 (pins updated), or 2 (error)."""
     args = _parse_args(argv)
+    patterns = args.config or [Path(".pre-commit-config.yaml")]
+    try:
+        configs = resolve_configs(patterns)
+    except FileNotFoundError as e:
+        print(f"error: {e}", file=sys.stderr)
+        return 2
     try:
         lock = parse_lock(args.lockfile)
     except FileNotFoundError as e:
         print(f"error: {e}", file=sys.stderr)
         return 2
-    result = update_config(args.config, lock=lock, operator=args.operator, dry_run=args.dry_run)
-    for warning in result.warnings:
-        print(f"warning: {warning}", file=sys.stderr)
-    for item in result.missing:
-        print(f"warning: {item}", file=sys.stderr)
-    for change in result.changes:
-        print(f"{change.hook_id}: {change.package} {change.old} → {change.new}")
-    return 1 if (result.changes or result.missing) else 0
 
+    multi = len(configs) > 1
+    any_changes = False
+    for config_path in configs:
+        prefix = f"{config_path}: " if multi else ""
+        result = update_config(config_path, lock=lock, operator=args.operator, dry_run=args.dry_run)
+        for warning in result.warnings:
+            print(f"warning: {prefix}{warning}", file=sys.stderr)
+        for item in result.missing:
+            print(f"warning: {prefix}{item}", file=sys.stderr)
+        for change in result.changes:
+            print(f"{prefix}{change.hook_id}: {change.package} {change.old} → {change.new}")
+        if result.changes or result.missing:
+            any_changes = True
 
-if __name__ == "__main__":
-    sys.exit(main())
+    return 1 if any_changes else 0

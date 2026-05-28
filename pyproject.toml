@@ -12,7 +12,7 @@ license = { text = "MIT" }
 dependencies = ["ruamel.yaml>=0.18"]
 
 [project.scripts]
-hookpin = "hookpin.main:main"
+hookpin = "hookpin.cli:main"
 
 
 

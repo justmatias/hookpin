@@ -4,7 +4,7 @@ import tomllib
 from pathlib import Path
 from typing import Any
 
-from .utils import normalize_package_name
+from .naming import normalize_package_name
 
 
 def parse_lock(path: Path) -> dict[str, str]:

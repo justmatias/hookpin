@@ -70,7 +70,19 @@ Report stale pins and missing dependencies without writing any files. Exits 1 if
 
 ### `--config`
 
-Path to the pre-commit config file. Defaults to `.pre-commit-config.yaml`.
+Path or glob pattern to a pre-commit config file. May be repeated to cover multiple
+files (e.g. in a monorepo). Glob patterns are expanded by hookpin — no shell quoting
+tricks required. Defaults to `.pre-commit-config.yaml` when omitted.
+
+```yaml
+- repo: https://github.com/justmatias/hookpin
+  rev: v5.0.0
+  hooks:
+    - id: hookpin
+      args: [--config, 'packages/*/.pre-commit-config.yaml']
+```
+
+An unmatched glob pattern or a literal path that does not exist exits with code 2.
 
 ### `--lockfile`
 

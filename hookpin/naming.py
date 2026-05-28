@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from .config import NORMALIZATION_RE
+from .patterns import NORMALIZATION_RE
 
 
 def normalize_package_name(name: str) -> str:
