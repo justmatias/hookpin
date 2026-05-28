@@ -1,9 +1,7 @@
-"""Functions for updating additional_dependencies pins in a pre-commit config."""
-
 from dataclasses import dataclass
 from pathlib import Path
 
-from ruamel.yaml import YAML  # pylint: disable=import-error
+from ruamel.yaml import YAML
 
 from .naming import normalize_package_name
 from .patterns import SPECIFIER_PART_RE, SPECIFIER_RE
@@ -79,7 +77,9 @@ def _process_hook_dependencies(
 ) -> UpdateResult:
     result = UpdateResult(changes=[], warnings=[], missing=[])
     for index, entry in enumerate(dependencies):
-        dependency = _process_dependency(entry=str(entry), hook_id=hook_id, lock=lock, operator=operator)
+        dependency = _process_dependency(
+            entry=str(entry), hook_id=hook_id, lock=lock, operator=operator
+        )
         if dependency.missing and dependency.warning:
             result.missing.append(dependency.warning)
         elif dependency.warning:

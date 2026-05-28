@@ -12,7 +12,9 @@ def monorepo_and_lock(tmp_path: Path) -> tuple[Path, Path, Path]:
     """Two stale configs (pkg_a, pkg_b) + shared uv.lock."""
     for pkg in ("pkg_a", "pkg_b"):
         (tmp_path / pkg).mkdir()
-        shutil.copy(SHARED_FIXTURES / "config_basic.yaml", tmp_path / pkg / ".pre-commit-config.yaml")
+        shutil.copy(
+            SHARED_FIXTURES / "config_basic.yaml", tmp_path / pkg / ".pre-commit-config.yaml"
+        )
     lock = tmp_path / "uv.lock"
     shutil.copy(SHARED_FIXTURES / "uv.lock", lock)
     return (

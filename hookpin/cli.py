@@ -28,7 +28,9 @@ def main(argv: list[str] | None = None) -> int:
     any_changes = False
     for config_path in configs:
         prefix = f"{config_path}: " if multiple_configs else ""
-        result = update_config(config_path, lock=lock, operator=arguments.operator, dry_run=arguments.dry_run)
+        result = update_config(
+            config_path, lock=lock, operator=arguments.operator, dry_run=arguments.dry_run
+        )
         for warning in result.warnings:
             print(f"warning: {prefix}{warning}", file=sys.stderr)
         for item in result.missing:

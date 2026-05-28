@@ -33,6 +33,7 @@ testpaths = ["tests"]
 
 [tool.pylint.main]
 source-roots = ["."]
+extension-pkg-allow-list = ["ruamel.yaml"]
 
 [tool.pylint.messages-control]
 disable = ["missing-module-docstring", "missing-function-docstring", "missing-class-docstring"]
