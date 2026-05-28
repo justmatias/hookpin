@@ -1,3 +1,5 @@
+# Stale pydantic==1.0.0 alongside a current ruff==0.9.0 pin.
+# Used as the baseline "something needs updating" fixture across integration and config_updater tests.
 repos:
   - repo: https://github.com/pre-commit/mirrors-mypy
     rev: v1.0.0

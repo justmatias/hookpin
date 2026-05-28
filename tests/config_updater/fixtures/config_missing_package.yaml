@@ -1,0 +1,9 @@
+# Config referencing a package (unknown-package) absent from the lockfile.
+# Used to verify that UpdateResult.missing is populated and the file is not rewritten.
+repos:
+  - repo: https://example.com/hook
+    rev: v1
+    hooks:
+      - id: my-hook
+        additional_dependencies:
+          - unknown-package==1.0.0

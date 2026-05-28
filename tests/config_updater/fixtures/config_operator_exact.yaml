@@ -1,0 +1,9 @@
+# Config with a single exact-pin dep (pydantic==1.0.0).
+# Used to verify the --operator flag override behaviour with a simple equality pin.
+repos:
+  - repo: https://example.com/hook
+    rev: v1
+    hooks:
+      - id: my-hook
+        additional_dependencies:
+          - pydantic==1.0.0

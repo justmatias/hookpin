@@ -1,0 +1,9 @@
+# Config with a bare unknown package name (not in lockfile, no version specifier).
+# Used to verify that a bare name produces a warning entry, not a missing-dep entry.
+repos:
+  - repo: https://example.com/hook
+    rev: v1
+    hooks:
+      - id: my-hook
+        additional_dependencies:
+          - unknown-bare-package

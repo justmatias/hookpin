@@ -1,0 +1,13 @@
+# Lock listing the same logical package under two name forms (Pydantic_Core and pydantic-core).
+# Used to verify that PEP 503 name normalization deduplicates entries correctly.
+version = 1
+
+[[package]]
+name = "Pydantic_Core"
+version = "2.33.2"
+source = { registry = "https://pypi.org/simple" }
+
+[[package]]
+name = "pydantic-core"
+version = "2.33.2"
+source = { registry = "https://pypi.org/simple" }

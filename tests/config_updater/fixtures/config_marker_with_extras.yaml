@@ -1,0 +1,9 @@
+# Config with both PEP 508 extras ([email]) and an environment marker (; python_version>="3.11").
+# Used to verify that both extras and the marker are preserved after rewriting.
+repos:
+  - repo: https://example.com/hook
+    rev: v1
+    hooks:
+      - id: my-hook
+        additional_dependencies:
+          - pydantic[email]==1.0.0; python_version>="3.11"

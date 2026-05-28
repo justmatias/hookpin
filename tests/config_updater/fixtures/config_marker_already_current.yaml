@@ -1,0 +1,9 @@
+# Config with an already-current pin and a PEP 508 environment marker.
+# Used to verify that hookpin is a no-op when the pinned version already matches the lockfile.
+repos:
+  - repo: https://example.com/hook
+    rev: v1
+    hooks:
+      - id: my-hook
+        additional_dependencies:
+          - pydantic==2.13.4; python_version>="3.11"

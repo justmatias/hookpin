@@ -1,3 +1,5 @@
+# Config with PEP 508 extras (pydantic[email]) and a >= operator (black>=22.0).
+# Used to verify that extras notation and non-exact operators are handled and preserved correctly.
 repos:
   - repo: https://github.com/pre-commit/mirrors-mypy
     rev: v1.0.0

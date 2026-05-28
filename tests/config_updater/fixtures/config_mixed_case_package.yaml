@@ -1,0 +1,9 @@
+# Config with a mixed-case package name (Pydantic with uppercase P).
+# Used to verify that the original casing of the package name is preserved after rewriting.
+repos:
+  - repo: https://example.com/hook
+    rev: v1
+    hooks:
+      - id: my-hook
+        additional_dependencies:
+          - Pydantic==1.0.0

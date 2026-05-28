@@ -1,3 +1,5 @@
+# Config with inline YAML comments (e.g. "# pinned from uv.lock", "# keep in sync").
+# Used to verify that ruamel.yaml preserves all comments when rewriting pins.
 repos:
   - repo: https://github.com/pre-commit/mirrors-mypy
     rev: v1.0.0

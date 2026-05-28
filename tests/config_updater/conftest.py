@@ -3,7 +3,8 @@ from pathlib import Path
 
 import pytest
 
-FIXTURES = Path(__file__).parent.parent / "fixtures"
+FIXTURES = Path(__file__).parent / "fixtures"
+SHARED_FIXTURES = Path(__file__).parent.parent / "fixtures"
 
 
 @pytest.fixture
@@ -18,79 +19,95 @@ def lock_packages() -> dict[str, str]:
     }
 
 
+def _config(tmp_path: Path, fixtures_dir: Path, name: str) -> Path:
+    dest = tmp_path / "config.yaml"
+    shutil.copy(fixtures_dir / name, dest)
+    return dest
+
+
+def _shared(tmp_path: Path, name: str) -> Path:
+    return _config(tmp_path, SHARED_FIXTURES, name)
+
+
+def _local(tmp_path: Path, name: str) -> Path:
+    return _config(tmp_path, FIXTURES, name)
+
+
 @pytest.fixture
 def config_basic(tmp_path: Path) -> Path:
-    dest = tmp_path / "config.yaml"
-    shutil.copy(FIXTURES / "config_basic.yaml", dest)
-    return dest
+    return _shared(tmp_path, "config_basic.yaml")
 
 
 @pytest.fixture
 def config_with_extras(tmp_path: Path) -> Path:
-    dest = tmp_path / "config.yaml"
-    shutil.copy(FIXTURES / "config_with_extras.yaml", dest)
-    return dest
+    return _shared(tmp_path, "config_with_extras.yaml")
 
 
 @pytest.fixture
 def config_with_comments(tmp_path: Path) -> Path:
-    dest = tmp_path / "config.yaml"
-    shutil.copy(FIXTURES / "config_with_comments.yaml", dest)
-    return dest
+    return _shared(tmp_path, "config_with_comments.yaml")
 
 
 @pytest.fixture
-def multi_hook_config(tmp_path: Path) -> Path:
-    config_path = tmp_path / "config.yaml"
-    config_path.write_text(
-        """\
-repos:
-  - repo: https://example.com/hook-a
-    rev: v1
-    hooks:
-      - id: hook-a
-        additional_dependencies:
-          - pydantic==1.0.0
-  - repo: https://example.com/hook-b
-    rev: v1
-    hooks:
-      - id: hook-b
-        additional_dependencies:
-          - pydantic==1.0.0
-"""
-    )
-    return config_path
+def multiple_hooks_config(tmp_path: Path) -> Path:
+    return _local(tmp_path, "config_multiple_hooks.yaml")
 
 
 @pytest.fixture
 def missing_package_config(tmp_path: Path) -> Path:
-    config_path = tmp_path / "config.yaml"
-    config_path.write_text(
-        """\
-repos:
-  - repo: https://example.com/hook
-    rev: v1
-    hooks:
-      - id: my-hook
-        additional_dependencies:
-          - unknown-package==1.0.0
-"""
-    )
-    return config_path
+    return _local(tmp_path, "config_missing_package.yaml")
 
 
 @pytest.fixture
-def case_config(tmp_path: Path) -> Path:
-    config_path = tmp_path / "config.yaml"
-    config_path.write_text(
-        """\
-repos:
-  - repo: https://example.com/hook
-    rev: v1
-    hooks:
-      - id: my-hook
-        additional_dependencies:
-          - Pydantic==1.0.0
-"""
-    )
-    return config_path
+def mixed_case_config(tmp_path: Path) -> Path:
+    return _local(tmp_path, "config_mixed_case_package.yaml")
+
+
+@pytest.fixture
+def bare_dependency_config(tmp_path: Path) -> Path:
+    return _local(tmp_path, "config_bare_dependency.yaml")
+
+
+@pytest.fixture
+def bare_unknown_dependency_config(tmp_path: Path) -> Path:
+    return _local(tmp_path, "config_bare_unknown_dependency.yaml")
+
+
+@pytest.fixture
+def compatible_release_config(tmp_path: Path) -> Path:
+    return _local(tmp_path, "config_operator_compatible_release.yaml")
+
+
+@pytest.fixture
+def less_than_or_equal_config(tmp_path: Path) -> Path:
+    return _local(tmp_path, "config_operator_less_than_or_equal.yaml")
+
+
+@pytest.fixture
+def not_equal_config(tmp_path: Path) -> Path:
+    return _local(tmp_path, "config_operator_not_equal.yaml")
+
+
+@pytest.fixture
+def range_config(tmp_path: Path) -> Path:
+    return _local(tmp_path, "config_operator_range.yaml")
+
+
+@pytest.fixture
+def exact_config(tmp_path: Path) -> Path:
+    return _local(tmp_path, "config_operator_exact.yaml")
+
+
+@pytest.fixture
+def marker_config(tmp_path: Path) -> Path:
+    return _local(tmp_path, "config_marker.yaml")
+
+
+@pytest.fixture
+def marker_with_extras_config(tmp_path: Path) -> Path:
+    return _local(tmp_path, "config_marker_with_extras.yaml")
+
+
+@pytest.fixture
+def marker_already_current_config(tmp_path: Path) -> Path:
+    return _local(tmp_path, "config_marker_already_current.yaml")
