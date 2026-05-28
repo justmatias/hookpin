@@ -17,7 +17,7 @@ def resolve_configs(patterns: list[Path]) -> list[Path]:
     for pattern in patterns:
         pattern_str = str(pattern)
         if glob.has_magic(pattern_str):
-            matches = sorted(Path(p) for p in glob.glob(pattern_str, recursive=True))
+            matches = sorted(Path(path_string) for path_string in glob.glob(pattern_str, recursive=True))
             if not matches:
                 raise FileNotFoundError(f"no config files matched pattern: {pattern}")
             candidates = matches
