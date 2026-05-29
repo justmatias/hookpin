@@ -7,8 +7,8 @@ def test_stale_pin_updated(config_basic: Path, lock_packages: dict[str, str]) ->
     result = update_config(config_basic, lock=lock_packages)
     assert len(result.changes) == 1
     assert result.changes[0].package == "pydantic"
-    assert result.changes[0].old == "1.0.0"
-    assert result.changes[0].new == "2.13.4"
+    assert result.changes[0].old == "pydantic==1.0.0"
+    assert result.changes[0].new == "pydantic==2.13.4"
     assert not result.warnings
     assert "pydantic==2.13.4" in config_basic.read_text()
 
@@ -39,8 +39,8 @@ def test_bare_package_name_warns(
 def test_extras_preserved(config_with_extras: Path, lock_packages: dict[str, str]) -> None:
     result = update_config(config_with_extras, lock=lock_packages)
     pydantic_change = next(change for change in result.changes if change.package == "pydantic")
-    assert pydantic_change.old == "2.0.0"
-    assert pydantic_change.new == "2.13.4"
+    assert pydantic_change.old == "pydantic[email]==2.0.0"
+    assert pydantic_change.new == "pydantic[email]==2.13.4"
     assert "pydantic[email]==2.13.4" in config_with_extras.read_text()
 
 
@@ -88,8 +88,8 @@ def test_compatible_release_pin_updated(
 ) -> None:
     result = update_config(compatible_release_config, lock=lock_packages)
     assert len(result.changes) == 1
-    assert result.changes[0].old == "1.0.0"
-    assert result.changes[0].new == "2.13.4"
+    assert result.changes[0].old == "pydantic~=1.0.0"
+    assert result.changes[0].new == "pydantic~=2.13.4"
     assert "pydantic~=2.13.4" in compatible_release_config.read_text()
 
 
@@ -108,8 +108,8 @@ def test_ne_pin_updated(not_equal_config: Path, lock_packages: dict[str, str]) -
 def test_range_collapses_to_exact(range_config: Path, lock_packages: dict[str, str]) -> None:
     result = update_config(range_config, lock=lock_packages)
     assert len(result.changes) == 1
-    assert result.changes[0].old == ">=1.0,<3.0"
-    assert result.changes[0].new == "2.13.4"
+    assert result.changes[0].old == "pydantic>=1.0,<3.0"
+    assert result.changes[0].new == "pydantic==2.13.4"
     assert "pydantic==2.13.4" in range_config.read_text()
 
 
@@ -122,8 +122,8 @@ def test_operator_flag_overrides(exact_config: Path, lock_packages: dict[str, st
 def test_marker_preserved(marker_config: Path, lock_packages: dict[str, str]) -> None:
     result = update_config(marker_config, lock=lock_packages)
     assert len(result.changes) == 1
-    assert result.changes[0].old == "1.0.0"
-    assert result.changes[0].new == "2.13.4"
+    assert result.changes[0].old == 'pydantic==1.0.0; python_version>="3.11"'
+    assert result.changes[0].new == 'pydantic==2.13.4; python_version>="3.11"'
     assert 'pydantic==2.13.4; python_version>="3.11"' in marker_config.read_text()
 
 
