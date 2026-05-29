@@ -1,6 +1,20 @@
 # CHANGELOG
 
 
+## v7.0.1 (2026-05-29)
+
+### Bug Fixes
+
+- Add --only and --exclude CLI options to filter hooks during updates
+  ([#10](https://github.com/justmatias/hookpin/pull/10),
+  [`b1097b4`](https://github.com/justmatias/hookpin/commit/b1097b4616c89e7198f28df8791fab2578127606))
+
+### Chores
+
+- Fix failing build stages ([#11](https://github.com/justmatias/hookpin/pull/11),
+  [`99e85b4`](https://github.com/justmatias/hookpin/commit/99e85b4287d0732ef347a854181367e985657171))
+
+
 ## v7.0.0 (2026-05-29)
 
 ### Bug Fixes
