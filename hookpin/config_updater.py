@@ -52,7 +52,7 @@ class DependencyResult:
         return cls(new_dependency=new_dependency, change=change)
 
 
-def update_config(
+def update_config(  # pylint: disable=too-many-arguments
     config_path: Path,
     *,
     lock: dict[str, str],
