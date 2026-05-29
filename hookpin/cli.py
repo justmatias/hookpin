@@ -36,7 +36,7 @@ def main(argv: list[str] | None = None) -> int:
         for item in result.missing:
             print(f"warning: {prefix}{item}", file=sys.stderr)
         for change in result.changes:
-            print(f"{prefix}{change.hook_id}: {change.package} {change.old} → {change.new}")
+            print(f"{prefix}{change.hook_id}: {change.old} → {change.new}")
         if result.changes or result.missing:
             any_changes = True
 

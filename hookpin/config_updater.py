@@ -1,7 +1,9 @@
 from dataclasses import dataclass
 from pathlib import Path
+from typing import Self
 
 from ruamel.yaml import YAML
+from ruamel.yaml.comments import CommentedMap, CommentedSeq
 
 from .naming import normalize_package_name
 from .patterns import SPECIFIER_PART_RE, SPECIFIER_RE
@@ -33,61 +35,21 @@ class DependencyResult:
     warning: str | None = None
     missing: bool = False
 
+    @classmethod
+    def unchanged(cls) -> Self:
+        return cls()
 
-def _process_dependency(
-    *, entry: str, hook_id: str, lock: dict[str, str], operator: str | None = None
-) -> DependencyResult:
-    match = SPECIFIER_RE.match(entry)
-    if not match:
-        return DependencyResult(warning=f"{hook_id}: {entry!r} has no version specifier — skipping")
-    original_name, extras, specifier, marker = match.groups()
-    normalized_name = normalize_package_name(original_name)
-    if normalized_name not in lock:
-        return DependencyResult(
-            missing=True,
-            warning=f"{hook_id}: {original_name} not found in lockfile — leaving unchanged",
-        )
-    new_version = lock[normalized_name]
-    parts = SPECIFIER_PART_RE.findall(specifier)  # [(operator, version), ...]
+    @classmethod
+    def invalid(cls, message: str) -> Self:
+        return cls(warning=message)
 
-    if operator:
-        output_operator = operator
-    elif len(parts) == 1:
-        output_operator = parts[0][0]
-    else:
-        output_operator = "=="  # collapse compound ranges to an exact pin
+    @classmethod
+    def not_in_lock(cls, message: str) -> Self:
+        return cls(missing=True, warning=message)
 
-    new_dependency = f"{original_name}{extras or ''}{output_operator}{new_version}{marker or ''}"
-    if new_dependency == entry:
-        return DependencyResult()
-
-    old = parts[0][1] if len(parts) == 1 else specifier
-    return DependencyResult(
-        new_dependency=new_dependency,
-        change=Change(hook_id=hook_id, package=original_name, old=old, new=new_version),
-    )
-
-
-def _process_hook_dependencies(
-    dependencies: list,
-    *,
-    hook_id: str,
-    lock: dict[str, str],
-    operator: str | None,
-) -> UpdateResult:
-    result = UpdateResult(changes=[], warnings=[], missing=[])
-    for index, entry in enumerate(dependencies):
-        dependency = _process_dependency(
-            entry=str(entry), hook_id=hook_id, lock=lock, operator=operator
-        )
-        if dependency.missing and dependency.warning:
-            result.missing.append(dependency.warning)
-        elif dependency.warning:
-            result.warnings.append(dependency.warning)
-        if dependency.change:
-            dependencies[index] = dependency.new_dependency
-            result.changes.append(dependency.change)
-    return result
+    @classmethod
+    def updated(cls, new_dependency: str, change: Change) -> Self:
+        return cls(new_dependency=new_dependency, change=change)
 
 
 def update_config(
@@ -101,17 +63,19 @@ def update_config(
 
     When *dry_run* is True, compute changes but do not write the file.
     """
-    data: dict = YAML_INSTANCE.load(config_path)
+    data: CommentedMap = YAML_INSTANCE.load(config_path)
     result = UpdateResult(changes=[], warnings=[], missing=[])
 
-    for repo in data.get("repos", []):
-        for hook in repo.get("hooks", []):
+    for repository in data.get("repos", []):
+        for hook in repository.get("hooks", []):
             dependencies = hook.get("additional_dependencies")
             if not dependencies:
                 continue
+
+            hook_id = hook.get("id", "<unknown>")
             hook_result = _process_hook_dependencies(
                 dependencies,
-                hook_id=hook.get("id", "<unknown>"),
+                hook_id=hook_id,
                 lock=lock,
                 operator=operator,
             )
@@ -123,4 +87,70 @@ def update_config(
         with config_path.open("w") as config_file:
             YAML_INSTANCE.dump(data, config_file)
 
+    return result
+
+
+def _process_dependency(
+    *, entry: str, hook_id: str, lock: dict[str, str], operator: str | None = None
+) -> DependencyResult:
+    match = SPECIFIER_RE.match(entry)
+    if not match:
+        return DependencyResult.invalid(
+            message=f"{hook_id}: {entry!r} has no version specifier — skipping"
+        )
+
+    original_name, extras, specifier, marker = match.groups()
+
+    normalized_name = normalize_package_name(original_name)
+    if normalized_name not in lock:
+        return DependencyResult.not_in_lock(
+            message=f"{hook_id}: {original_name} not found in lockfile — leaving unchanged"
+        )
+
+    new_version = lock[normalized_name]
+
+    if operator:
+        output_operator = operator
+    else:
+        parts = SPECIFIER_PART_RE.findall(specifier)
+        output_operator = parts[0][0] if len(parts) == 1 else "=="
+
+    new_dependency = f"{original_name}{extras or ''}{output_operator}{new_version}{marker or ''}"
+    if new_dependency == entry:
+        return DependencyResult.unchanged()
+
+    change = Change(hook_id=hook_id, package=original_name, old=entry, new=new_dependency)
+    return DependencyResult.updated(new_dependency, change)
+
+
+def _is_dependency_ignored(dependencies: CommentedSeq, index: int) -> bool:
+    tokens = dependencies.ca.items.get(index, [None])
+    return tokens[0] is not None and "hookpin: ignore" in tokens[0].value
+
+
+def _process_hook_dependencies(
+    dependencies: CommentedSeq,
+    *,
+    hook_id: str,
+    lock: dict[str, str],
+    operator: str | None,
+) -> UpdateResult:
+    result = UpdateResult(changes=[], warnings=[], missing=[])
+    for index, entry in enumerate(dependencies):
+        if _is_dependency_ignored(dependencies, index):
+            continue
+
+        dependency = _process_dependency(
+            entry=str(entry),
+            hook_id=hook_id,
+            lock=lock,
+            operator=operator,
+        )
+        if dependency.missing:
+            result.missing.append(dependency.warning)  # type: ignore[arg-type]
+        elif dependency.warning:
+            result.warnings.append(dependency.warning)
+        if dependency.change:
+            dependencies[index] = dependency.new_dependency
+            result.changes.append(dependency.change)
     return result

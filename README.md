@@ -40,6 +40,18 @@ pydantic[email]==1.0.0; python_version>="3.11"
 
 Entries with no version specifier (bare package names, or names with only a marker) are left unchanged with a warning.
 
+## Ignoring specific pins
+
+Add a `# hookpin: ignore` inline comment to exclude a pin from updates:
+
+```yaml
+additional_dependencies:
+  - flake8-bugbear==1.0.0  # hookpin: ignore
+  - pydantic==1.0.0
+```
+
+`flake8-bugbear` will be left at `1.0.0` regardless of what `uv.lock` contains; `pydantic` is updated as normal.
+
 ## Options
 
 ### `--operator`
