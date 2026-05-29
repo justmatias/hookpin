@@ -58,10 +58,14 @@ def update_config(
     lock: dict[str, str],
     operator: str | None = None,
     dry_run: bool = False,
+    only: set[str] | None = None,
+    exclude: set[str] | None = None,
 ) -> UpdateResult:
     """Rewrite stale version pins in config_path in place.
 
     When *dry_run* is True, compute changes but do not write the file.
+    When *only* is given, only process hooks whose id is in the set.
+    When *exclude* is given, skip hooks whose id is in the set.
     """
     data: CommentedMap = YAML_INSTANCE.load(config_path)
     result = UpdateResult(changes=[], warnings=[], missing=[])
@@ -73,6 +77,11 @@ def update_config(
                 continue
 
             hook_id = hook.get("id", "<unknown>")
+            if only and hook_id not in only:
+                continue
+            if exclude and hook_id in exclude:
+                continue
+
             hook_result = _process_hook_dependencies(
                 dependencies,
                 hook_id=hook_id,
@@ -124,8 +133,9 @@ def _process_dependency(
 
 
 def _is_dependency_ignored(dependencies: CommentedSeq, index: int) -> bool:
+    """Return True if the dependency at index has an inline # hookpin: ignore comment."""
     tokens = dependencies.ca.items.get(index, [None])
-    return tokens[0] is not None and "hookpin: ignore" in tokens[0].value
+    return tokens[0] and "hookpin: ignore" in tokens[0].value
 
 
 def _process_hook_dependencies(
