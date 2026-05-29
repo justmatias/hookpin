@@ -1,6 +1,23 @@
 # CHANGELOG
 
 
+## v7.0.0 (2026-05-29)
+
+### Bug Fixes
+
+- Improve output diff ([#9](https://github.com/justmatias/hookpin/pull/9),
+  [`890c456`](https://github.com/justmatias/hookpin/commit/890c4565f97d968e7cfaf4d417b4402130e0ba87))
+
+* fix: improve output diff
+
+* fix: add support for ignoring specific dependency pins via hookpin: ignore comments
+
+### Features
+
+- Breaking change detected [skip ci]
+  ([`c4220a7`](https://github.com/justmatias/hookpin/commit/c4220a7591fa57543ae9fd7f7f2c9a9d34c6a152))
+
+
 ## v6.0.0 (2026-05-28)
 
 ### Features

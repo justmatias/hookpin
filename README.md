@@ -9,7 +9,7 @@ Add to your `.pre-commit-config.yaml`:
 ```yaml
 repos:
   - repo: https://github.com/justmatias/hookpin
-    rev: v6.0.0
+    rev: v7.0.0
     hooks:
       - id: hookpin
 ```
@@ -60,7 +60,7 @@ Override the output operator for all rewritten pins, regardless of what was in t
 
 ```yaml
 - repo: https://github.com/justmatias/hookpin
-  rev: v6.0.0
+  rev: v7.0.0
   hooks:
     - id: sync-uv-additional-deps
       args: [--operator, '==']
@@ -74,7 +74,7 @@ Report stale pins and missing dependencies without writing any files. Exits 1 if
 
 ```yaml
 - repo: https://github.com/justmatias/hookpin
-  rev: v6.0.0
+  rev: v7.0.0
   hooks:
     - id: hookpin
       args: [--dry-run]
@@ -88,7 +88,7 @@ tricks required. Defaults to `.pre-commit-config.yaml` when omitted.
 
 ```yaml
 - repo: https://github.com/justmatias/hookpin
-  rev: v6.0.0
+  rev: v7.0.0
   hooks:
     - id: hookpin
       args: [--config, 'packages/*/.pre-commit-config.yaml']
