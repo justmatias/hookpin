@@ -95,3 +95,8 @@ def marker_with_extras_config(tmp_path: Path) -> Path:
 @pytest.fixture
 def marker_already_current_config(tmp_path: Path) -> Path:
     return local_config(tmp_path, "config_marker_already_current.yaml")
+
+
+@pytest.fixture
+def ignored_dependency_config(tmp_path: Path) -> Path:
+    return local_config(tmp_path, "config_ignored_dependency.yaml")

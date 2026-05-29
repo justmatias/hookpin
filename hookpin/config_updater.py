@@ -3,6 +3,7 @@ from pathlib import Path
 from typing import Self
 
 from ruamel.yaml import YAML
+from ruamel.yaml.comments import CommentedMap, CommentedSeq
 
 from .naming import normalize_package_name
 from .patterns import SPECIFIER_PART_RE, SPECIFIER_RE
@@ -62,7 +63,7 @@ def update_config(
 
     When *dry_run* is True, compute changes but do not write the file.
     """
-    data: dict = YAML_INSTANCE.load(config_path)
+    data: CommentedMap = YAML_INSTANCE.load(config_path)
     result = UpdateResult(changes=[], warnings=[], missing=[])
 
     for repository in data.get("repos", []):
@@ -94,14 +95,16 @@ def _process_dependency(
 ) -> DependencyResult:
     match = SPECIFIER_RE.match(entry)
     if not match:
-        return DependencyResult.invalid(f"{hook_id}: {entry!r} has no version specifier — skipping")
+        return DependencyResult.invalid(
+            message=f"{hook_id}: {entry!r} has no version specifier — skipping"
+        )
 
     original_name, extras, specifier, marker = match.groups()
 
     normalized_name = normalize_package_name(original_name)
     if normalized_name not in lock:
         return DependencyResult.not_in_lock(
-            f"{hook_id}: {original_name} not found in lockfile — leaving unchanged"
+            message=f"{hook_id}: {original_name} not found in lockfile — leaving unchanged"
         )
 
     new_version = lock[normalized_name]
@@ -120,8 +123,13 @@ def _process_dependency(
     return DependencyResult.updated(new_dependency, change)
 
 
+def _is_dependency_ignored(dependencies: CommentedSeq, index: int) -> bool:
+    tokens = dependencies.ca.items.get(index, [None])
+    return tokens[0] is not None and "hookpin: ignore" in tokens[0].value
+
+
 def _process_hook_dependencies(
-    dependencies: list,
+    dependencies: CommentedSeq,
     *,
     hook_id: str,
     lock: dict[str, str],
@@ -129,6 +137,9 @@ def _process_hook_dependencies(
 ) -> UpdateResult:
     result = UpdateResult(changes=[], warnings=[], missing=[])
     for index, entry in enumerate(dependencies):
+        if _is_dependency_ignored(dependencies, index):
+            continue
+
         dependency = _process_dependency(
             entry=str(entry),
             hook_id=hook_id,

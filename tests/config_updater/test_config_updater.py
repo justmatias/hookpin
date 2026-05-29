@@ -145,6 +145,16 @@ def test_marker_noop_when_current(
     assert not result.warnings
 
 
+def test_ignored_dependency_skipped(
+    ignored_dependency_config: Path, lock_packages: dict[str, str]
+) -> None:
+    result = update_config(ignored_dependency_config, lock=lock_packages)
+    assert len(result.changes) == 1
+    assert result.changes[0].package == "ruff"
+    assert "pydantic==1.0.0" in ignored_dependency_config.read_text()
+    assert "ruff==0.9.0" in ignored_dependency_config.read_text()
+
+
 def test_operator_flag_collapses_range(range_config: Path, lock_packages: dict[str, str]) -> None:
     result = update_config(range_config, lock=lock_packages, operator=">=")
     assert len(result.changes) == 1
