@@ -15,31 +15,31 @@ def monorepo_and_lock(tmp_path: Path) -> tuple[Path, Path, Path]:
         shutil.copy(
             SHARED_FIXTURES / "config_basic.yaml", tmp_path / pkg / ".pre-commit-config.yaml"
         )
-    lock = tmp_path / "uv.lock"
-    shutil.copy(SHARED_FIXTURES / "uv.lock", lock)
+    lock_path = tmp_path / "uv.lock"
+    shutil.copy(SHARED_FIXTURES / "uv.lock", lock_path)
     return (
         tmp_path / "pkg_a" / ".pre-commit-config.yaml",
         tmp_path / "pkg_b" / ".pre-commit-config.yaml",
-        lock,
+        lock_path,
     )
 
 
 @pytest.fixture
 def config_and_lock(tmp_path: Path) -> tuple[Path, Path]:
     config_path = tmp_path / ".pre-commit-config.yaml"
-    lock = tmp_path / "uv.lock"
+    lock_path = tmp_path / "uv.lock"
     shutil.copy(SHARED_FIXTURES / "config_basic.yaml", config_path)
-    shutil.copy(SHARED_FIXTURES / "uv.lock", lock)
-    return config_path, lock
+    shutil.copy(SHARED_FIXTURES / "uv.lock", lock_path)
+    return config_path, lock_path
 
 
 @pytest.fixture
 def config_extras_and_lock(tmp_path: Path) -> tuple[Path, Path]:
     config_path = tmp_path / ".pre-commit-config.yaml"
-    lock = tmp_path / "uv.lock"
+    lock_path = tmp_path / "uv.lock"
     shutil.copy(SHARED_FIXTURES / "config_with_extras.yaml", config_path)
-    shutil.copy(SHARED_FIXTURES / "uv.lock", lock)
-    return config_path, lock
+    shutil.copy(SHARED_FIXTURES / "uv.lock", lock_path)
+    return config_path, lock_path
 
 
 @pytest.fixture
@@ -52,26 +52,26 @@ def config_with_missing_lock(tmp_path: Path) -> tuple[Path, Path]:
 @pytest.fixture
 def config_current_and_lock(tmp_path: Path) -> tuple[Path, Path]:
     config_path = tmp_path / ".pre-commit-config.yaml"
-    lock = tmp_path / "uv.lock"
+    lock_path = tmp_path / "uv.lock"
     shutil.copy(FIXTURES / "config_already_current.yaml", config_path)
-    shutil.copy(SHARED_FIXTURES / "uv.lock", lock)
-    return config_path, lock
+    shutil.copy(SHARED_FIXTURES / "uv.lock", lock_path)
+    return config_path, lock_path
 
 
 @pytest.fixture
 def empty_lock(tmp_path: Path) -> Path:
-    lock = tmp_path / "uv.lock"
-    shutil.copy(SHARED_FIXTURES / "uv_empty.lock", lock)
-    return lock
+    lock_path = tmp_path / "uv.lock"
+    shutil.copy(SHARED_FIXTURES / "uv_empty.lock", lock_path)
+    return lock_path
 
 
 @pytest.fixture
 def config_missing_dep_and_lock(tmp_path: Path) -> tuple[Path, Path]:
     config_path = tmp_path / ".pre-commit-config.yaml"
     shutil.copy(FIXTURES / "config_missing_dependency.yaml", config_path)
-    lock = tmp_path / "uv.lock"
-    shutil.copy(SHARED_FIXTURES / "uv_empty.lock", lock)
-    return config_path, lock
+    lock_path = tmp_path / "uv.lock"
+    shutil.copy(SHARED_FIXTURES / "uv_empty.lock", lock_path)
+    return config_path, lock_path
 
 
 @pytest.fixture
