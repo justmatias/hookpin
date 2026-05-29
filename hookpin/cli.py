@@ -29,7 +29,12 @@ def main(argv: list[str] | None = None) -> int:
     for config_path in configs:
         prefix = f"{config_path}: " if multiple_configs else ""
         result = update_config(
-            config_path, lock=lock, operator=arguments.operator, dry_run=arguments.dry_run
+            config_path,
+            lock=lock,
+            operator=arguments.operator,
+            dry_run=arguments.dry_run,
+            only=set(arguments.only) if arguments.only else None,
+            exclude=set(arguments.exclude) if arguments.exclude else None,
         )
         for warning in result.warnings:
             print(f"warning: {prefix}{warning}", file=sys.stderr)
@@ -75,5 +80,19 @@ def _parse_arguments(argv: list[str] | None) -> argparse.Namespace:
         action="store_true",
         default=False,
         help="Report stale pins and exit non-zero without writing (CI gate)",
+    )
+    parser.add_argument(
+        "--only",
+        metavar="HOOK_ID",
+        action="append",
+        default=None,
+        help="Process only the hook with this id; may be repeated",
+    )
+    parser.add_argument(
+        "--exclude",
+        metavar="HOOK_ID",
+        action="append",
+        default=None,
+        help="Skip the hook with this id; may be repeated",
     )
     return parser.parse_args(argv)

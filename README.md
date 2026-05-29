@@ -96,6 +96,34 @@ tricks required. Defaults to `.pre-commit-config.yaml` when omitted.
 
 An unmatched glob pattern or a literal path that does not exist exits with code 2.
 
+### `--only`
+
+Process only the hooks with the given id. May be repeated to include multiple hooks:
+
+```yaml
+- repo: https://github.com/justmatias/hookpin
+  rev: v7.0.0
+  hooks:
+    - id: hookpin
+      args: [--only, mypy, --only, ruff]
+```
+
+Hooks not listed are left completely untouched.
+
+### `--exclude`
+
+Skip the hooks with the given id. May be repeated to exclude multiple hooks:
+
+```yaml
+- repo: https://github.com/justmatias/hookpin
+  rev: v7.0.0
+  hooks:
+    - id: hookpin
+      args: [--exclude, mypy]
+```
+
+`--only` and `--exclude` are independent: `--only` is an allowlist, `--exclude` is a denylist.
+
 ### `--lockfile`
 
 Path to the lock file. Defaults to `uv.lock`.

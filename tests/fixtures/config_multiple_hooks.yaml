@@ -1,0 +1,15 @@
+# Config with two separate hooks each containing a stale pydantic==1.0.0 dep.
+# Used to verify that pins are updated across all hooks, not just the first one found.
+repos:
+  - repo: https://example.com/hook-a
+    rev: v1
+    hooks:
+      - id: hook-a
+        additional_dependencies:
+          - pydantic==1.0.0
+  - repo: https://example.com/hook-b
+    rev: v1
+    hooks:
+      - id: hook-b
+        additional_dependencies:
+          - pydantic==1.0.0

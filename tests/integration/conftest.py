@@ -72,3 +72,17 @@ def config_missing_dep_and_lock(tmp_path: Path) -> tuple[Path, Path]:
     lock = tmp_path / "uv.lock"
     shutil.copy(SHARED_FIXTURES / "uv_empty.lock", lock)
     return config_path, lock
+
+
+@pytest.fixture
+def multi_hook_config(tmp_path: Path) -> Path:
+    config_path = tmp_path / ".pre-commit-config.yaml"
+    shutil.copy(SHARED_FIXTURES / "config_multiple_hooks.yaml", config_path)
+    return config_path
+
+
+@pytest.fixture
+def lock(tmp_path: Path) -> Path:
+    path = tmp_path / "uv.lock"
+    shutil.copy(SHARED_FIXTURES / "uv.lock", path)
+    return path
